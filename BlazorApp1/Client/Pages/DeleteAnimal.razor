@@ -1,0 +1,55 @@
+﻿@page "/animal/delete/{animalId:int}"
+@using BlazorApp1.Shared.Model
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+<h2>Delete Animal</h2>
+<br />
+<div class="form-group">
+    <h4>Do you want to delete this animal?</h4>
+    <table class="table">
+        <tbody>
+            <tr>
+                <td>Name</td>
+                <td>@animal.name</td>
+            </tr>
+            <tr>
+                <td>Breed</td>
+                <td>@animal.breed</td>
+            </tr>
+            <tr>
+                <td>Birthdate</td>
+                <td>@animal.birthDate</td>
+            </tr>
+            <tr>
+                <td>Price</td>
+                <td>@animal.price</td>
+            </tr>
+            <tr>
+                <td>Status</td>
+                <td>@animal.status</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<div class="form-group">
+    <input type="submit" value="Delete" @onclick="(async () => await RemoveAnimal(animal.animalId))" class="btn btn-danger" />
+    <input type="submit" value="Cancel" @onclick="(() => Cancel())" class="btn btn-warning" />
+</div>
+@code {
+    [Parameter]
+    public int animalId { get; set; }
+    Animal animal = new Animal();
+    protected override async Task OnInitializedAsync()
+    {
+        animal = await Http.GetFromJsonAsync<Animal>("/api/Animal/" + Convert.ToInt32(animalId));
+    }
+    protected async Task RemoveAnimal(int animalID)
+    {
+        await Http.DeleteAsync("api/Animal/" + animalID);
+        NavigationManager.NavigateTo("/animaldetails");
+    }
+    void Cancel()
+    {
+        NavigationManager.NavigateTo("/animaldetails");
+    }
+}
